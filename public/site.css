@@ -12,17 +12,23 @@ body {
 
 div#remote-media {
   height: 43%;
-  width: 100%;
+  width: 50%;
   background-color: #fff;
   text-align: center;
   margin: auto;
 }
+@media screen and (max-width: 1215px) {
+  div#remote-media {
+    width:100%
+  }
+}
 
   div#remote-media video {
+    width:90%;
     border: 1px solid #272726;
-    margin: 3em 2em;
+    margin: 1em 1em;
     height: 70%;
-    max-width: 27% !important;
+   /* max-width: 27% !important; */
     background-color: #272726;
     background-repeat: no-repeat;
   }
@@ -39,9 +45,11 @@ div#controls {
 
     div#controls div#room-controls,
     div#controls div#preview {
-      width: 16em;
-      margin: 0 1.5em;
-      text-align: center;
+      width: 25%;
+      min-width:280px;
+      height:320px
+     /* margin: 0 1.5em;
+      text-align: center;*/
     }
 
   div#controls p.instructions {
@@ -107,10 +115,10 @@ div#controls {
   }
 
     div#controls div#room-controls input {
-      width: 100%;
+      width: 270px;
       height: 2.5em;
-      padding: .5em;
-      display: block;
+     /* padding: .5em;
+      display: block;*/
     }
 
     div#controls div#room-controls button {
