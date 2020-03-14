@@ -3,6 +3,8 @@ var previewTracks;
 var identity;
 var roomName;
 
+"use strict";
+
 function attachTracks(tracks, container) {
   tracks.forEach(function(track) {
     container.appendChild(track.attach());
@@ -27,6 +29,37 @@ function detachParticipantTracks(participant) {
   detachTracks(tracks);
 }
 
+/* helper functions ----*/
+ function getURLParameter(sParam) {
+  var sPageURL = window.location.search.substring(1);
+  var sURLVariables = sPageURL.split('&');
+  for (var i = 0; i < sURLVariables.length; i++) {
+    var sParameterName = sURLVariables[i].split('=');
+    if (sParameterName[0] == sParam) {
+      return sParameterName[1];
+    }
+  }
+}
+function joinRoom(roomName,token){
+  if (roomName) {
+    log("Joining room '" + roomName + "'...");
+
+    var connectOptions = { name: roomName, logLevel: 'debug' };
+    if (previewTracks) {
+      connectOptions.tracks = previewTracks;
+    }
+
+    Twilio.Video.connect(token, connectOptions).then(roomJoined, function(error) {
+      log('Could not connect to Twilio: ' + error.message);
+    });
+  } else {
+    alert('Please enter a room name.');
+  }
+
+}
+
+roomName=getURLParameter('channelName');
+
 // Check for WebRTC
 if (!navigator.webkitGetUserMedia && !navigator.mozGetUserMedia) {
   alert('WebRTC is not available in your browser.');
@@ -39,26 +72,23 @@ window.addEventListener('beforeunload', leaveRoomIfJoined);
 $.getJSON('/token', function(data) {
   identity = data.identity;
 
-  document.getElementById('room-controls').style.display = 'block';
+  document.getElementById('room-controls').style.display = roomName?'none':'block';
 
-  // Bind button to join room
-  document.getElementById('button-join').onclick = function () {
-    roomName = document.getElementById('room-name').value;
-    if (roomName) {
-      log("Joining room '" + roomName + "'...");
 
-      var connectOptions = { name: roomName, logLevel: 'debug' };
-      if (previewTracks) {
-        connectOptions.tracks = previewTracks;
-      }
+  if (!roomName){
+    // Bind button to join room
+    document.getElementById('button-join').onclick = function () {
+      roomName = document.getElementById('room-name').value;
+      joinRoom(roomName,data.token);
 
-      Twilio.Video.connect(data.token, connectOptions).then(roomJoined, function(error) {
-        log('Could not connect to Twilio: ' + error.message);
-      });
-    } else {
-      alert('Please enter a room name.');
-    }
-  };
+    };
+  }
+  else{
+    setTimeout(function(){joinRoom(roomName,data.token); }, 0);
+  }
+
+
+
 
   // Bind button to leave room
   document.getElementById('button-leave').onclick = function () {
